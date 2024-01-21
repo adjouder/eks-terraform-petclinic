@@ -3,7 +3,7 @@ name: "Terraform Apply"
 on:
   push:
     branches:
-      - eks-feature-cluser-name
+      - main
 env:
   TF_CLOUD_ORGANIZATION: "adjouder"
   TF_API_TOKEN: "${{ secrets.TF_API_TOKEN }}"
