@@ -1,8 +1,6 @@
 terraform {
-
   cloud {
     organization = "adjouder"
-
     workspaces {
       name = "learn-terraform-cloud"
     }

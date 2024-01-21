@@ -21,4 +21,4 @@ variable "scaling_min_size" {}
 
 variable "instance_types" {}
 
-#variable "key_pair" {}
+variable "key_pair" {}
