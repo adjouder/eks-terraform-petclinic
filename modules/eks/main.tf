@@ -25,7 +25,7 @@ resource "aws_eks_node_group" "petclinic" {
 
   remote_access {
     source_security_group_ids = [aws_security_group.node_group_one.id]
-    ec2_ssh_key               = "key-05289ce8f3fc35445"
+    ec2_ssh_key               = var.key_pair
   }
 
   scaling_config {
