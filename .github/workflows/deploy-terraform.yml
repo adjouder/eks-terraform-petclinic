@@ -1,9 +1,7 @@
-name: "Terraform Apply"
+name: "Terraform aws EKS deployment"
 
-on:
-  push:
-    branches:
-      - main
+on: [push]
+
 env:
   TF_CLOUD_ORGANIZATION: "adjouder"
   TF_API_TOKEN: "${{ secrets.TF_API_TOKEN }}"
