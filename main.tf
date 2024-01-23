@@ -15,7 +15,7 @@ module "eks" {
   scaling_desired_size    = 1
   scaling_max_size        = 1
   scaling_min_size        = 1
-  instance_types          = ["t3.medium"]
+  instance_types          = ["t3.large"]
   key_pair                = "aws-ansible-instances"
 }
 
