@@ -1,55 +1,46 @@
-#######modules/vpc/main.tf
-resource "aws_vpc" "petclinic" {
-  cidr_block       = var.vpc_cidr
-  instance_tenancy = var.instance_tenancy
-  tags = {
-    Name = var.tags
-  }
-}
-
-resource "aws_internet_gateway" "petclinic_gw" {
-  vpc_id = aws_vpc.petclinic.id
+# create a virtual private cloud
+resource "aws_vpc" "petclinic_vpc" {
+  cidr_block           = var.cidr_vpc
+  enable_dns_support   = true
+  enable_dns_hostnames = true
 
   tags = {
-    Name = var.tags
+    Name = "petclinic-vpc"
   }
 }
 
-data "aws_availability_zones" "available" {
-}
+# private subnets
+resource "aws_subnet" "private_subnets" {
+  count                   = 2
+  vpc_id                  = aws_vpc.petclinic_vpc.id
+  map_public_ip_on_launch = "false"
+  cidr_block              = var.cidr_private_subnets[count.index]
+  availability_zone       = var.availability_zones[count.index]
+  depends_on = [
+    aws_vpc.petclinic_vpc,
+  ]
 
-
-resource "random_shuffle" "az_list" {
-  input        = data.aws_availability_zones.available.names
-  result_count = 2
-}
-
-resource "aws_subnet" "public_petclinic_subnet" {
-  count                   = var.public_sn_count
-  vpc_id                  = aws_vpc.petclinic.id
-  cidr_block              = var.public_cidrs[count.index]
-  availability_zone       = random_shuffle.az_list.result[count.index]
-  map_public_ip_on_launch = var.map_public_ip_on_launch
   tags = {
-    Name = var.tags
+    Name                                        = "petclinic-private_subnets-${count.index}"
+    "kubernetes.io/role/internal-elb"           = "1"
+    "kubernetes.io/cluster/${var.cluster_name}" = "owned"
   }
 }
 
-
-resource "aws_default_route_table" "internal_petclinic_default" {
-  default_route_table_id = aws_vpc.petclinic.default_route_table_id
-
-  route {
-    cidr_block = var.rt_route_cidr_block
-    gateway_id = aws_internet_gateway.petclinic_gw.id
-  }
+# public subnets
+resource "aws_subnet" "public_subnets" {
+  count                   = 2
+  vpc_id                  = aws_vpc.petclinic_vpc.id
+  map_public_ip_on_launch = "true"
+  cidr_block              = var.cidr_public_subnets[count.index]
+  availability_zone       = var.availability_zones[count.index]
+  depends_on = [
+    aws_vpc.petclinic_vpc,
+  ]
   tags = {
-    Name = var.tags
+    Name                                        = "petclinic-public_subnets-${count.index}"
+    "kubernetes.io/role/elb"                    = "1"
+    "kubernetes.io/cluster/${var.cluster_name}" = "owned"
   }
 }
 
-resource "aws_route_table_association" "default" {
-  count          = var.public_sn_count
-  subnet_id      = aws_subnet.public_petclinic_subnet[count.index].id
-  route_table_id = aws_default_route_table.internal_petclinic_default.id
-}
