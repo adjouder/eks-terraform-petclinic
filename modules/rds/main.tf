@@ -13,10 +13,10 @@ resource "aws_db_instance" "db" {
   engine                  = "mysql"
   engine_version          = "5.7"
   instance_class          = "db.t3.micro"
-  identifier              = var.identifiers[count.index]
+  identifier              = var.identifiants[count.index]
   parameter_group_name    = "default.mysql5.7"
   db_subnet_group_name    = aws_db_subnet_group.petclinic_db_subnet.name
-  vpc_security_group_ids  = [aws_security_group.petclinic_sg_mysql.id]
+  vpc_security_group_ids  = [aws_security_group.petclinic_sg_bd.id]
   multi_az                = true
   skip_final_snapshot     = true
   backup_retention_period = 1
