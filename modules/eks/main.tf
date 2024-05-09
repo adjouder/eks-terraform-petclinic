@@ -1,122 +1,79 @@
-resource "aws_eks_cluster" "petclinic" {
+# This Terraform file defines the resources for an Amazon EKS cluster and its addons.
+# It creates an EKS cluster with the specified name and VPC configuration.
+# The cluster is associated with three addons: kube-proxy, coredns, and vpc-cni.
+# Each addon is configured with a specific version and resolves conflicts on create and update.
+# The addons are tagged with the "eks_addon" label.
+# The addons depend on the EKS cluster resource.
+
+resource "aws_eks_cluster" "petclinic_eks_cluster" {
   name     = var.cluster_name
-  role_arn = aws_iam_role.petclinic.arn
+  role_arn = var.eks_cluster_role_arn
 
   vpc_config {
-    subnet_ids              = var.aws_public_subnet
-    endpoint_public_access  = var.endpoint_public_access
-    endpoint_private_access = var.endpoint_private_access
-    public_access_cidrs     = var.public_access_cidrs
-    security_group_ids      = [aws_security_group.node_group_one.id]
+    subnet_ids = var.private_subnet_ids
   }
-
-  depends_on = [
-    aws_iam_role_policy_attachment.petclinic-AmazonEKSClusterPolicy,
-    aws_iam_role_policy_attachment.petclinic-AmazonEKSVPCResourceController,
-  ]
 }
 
-resource "aws_eks_node_group" "petclinic" {
-  cluster_name    = aws_eks_cluster.petclinic.name
-  node_group_name = var.node_group_name
-  node_role_arn   = aws_iam_role.petclinic2.arn
-  subnet_ids      = var.aws_public_subnet
-  instance_types  = var.instance_types
-
-  remote_access {
-    source_security_group_ids = [aws_security_group.node_group_one.id]
-    ec2_ssh_key               = var.key_pair
-  }
+# Create worker nodes for the EKS cluster
+resource "aws_eks_node_group" "worker-node-group" {
+  cluster_name    = var.cluster_name
+  node_group_name = "${var.cluster_name}-eks-node-group"
+  node_role_arn   = var.workernodes_iam_role_arn
+  subnet_ids      = var.private_subnet_ids
+  instance_types  = ["t3a.xlarge"]
 
   scaling_config {
-    desired_size = var.scaling_desired_size
-    max_size     = var.scaling_max_size
-    min_size     = var.scaling_min_size
+    desired_size = 1
+    max_size     = 2
+    min_size     = 1
   }
 
   depends_on = [
-    aws_iam_role_policy_attachment.petclinic-AmazonEKSWorkerNodePolicy,
-    aws_iam_role_policy_attachment.petclinic-AmazonEKS_CNI_Policy,
-    aws_iam_role_policy_attachment.petclinic-AmazonEC2ContainerRegistryReadOnly,
+    var.amazon_eks_worker_node_role_policy_attachment,
+    var.amazon_eks_cni_role_policy_attachment,
+    var.amazon_ec2_container_registry_read_only_role_policy_attachment,
+    var.aws_certificate_manager_read_only_eks_role_policy_attachment
   ]
 }
 
-resource "aws_security_group" "node_group_one" {
-  name_prefix = "node_group_one"
-  vpc_id      = var.vpc_id
-
-  ingress {
-    from_port = 80
-    to_port   = 80
-    protocol  = "tcp"
-
-    cidr_blocks = ["0.0.0.0/0"]
+resource "aws_eks_addon" "kube_proxy" {
+  cluster_name                = aws_eks_cluster.petclinic_eks_cluster.name
+  addon_name                  = "kube-proxy"
+  addon_version               = "v1.28.4-eksbuild.1"
+  resolve_conflicts_on_create = "OVERWRITE"
+  resolve_conflicts_on_update = "OVERWRITE"
+  tags = {
+    "eks_addon" = "kube-proxy"
   }
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-}
-
-resource "aws_iam_role" "petclinic" {
-  name = "eks-cluster-petclinic"
-
-  assume_role_policy = <<POLICY
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Principal": {
-        "Service": "eks.amazonaws.com"
-      },
-      "Action": "sts:AssumeRole"
-    }
+  depends_on = [
+    aws_eks_cluster.petclinic_eks_cluster
   ]
 }
-POLICY
+
+resource "aws_eks_addon" "core_dns" {
+  cluster_name                = aws_eks_cluster.petclinic_eks_cluster.name
+  addon_name                  = "coredns"
+  addon_version               = "v1.10.1-eksbuild.6"
+  resolve_conflicts_on_create = "OVERWRITE"
+  resolve_conflicts_on_update = "OVERWRITE"
+  tags = {
+    "eks_addon" = "coredns"
+  }
+  depends_on = [
+    aws_eks_cluster.petclinic_eks_cluster
+  ]
 }
 
-resource "aws_iam_role_policy_attachment" "petclinic-AmazonEKSClusterPolicy" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
-  role       = aws_iam_role.petclinic.name
-}
-
-# Optionally, enable Security Groups for Pods
-# Reference: https://docs.aws.amazon.com/eks/latest/userguide/security-groups-for-pods.html
-resource "aws_iam_role_policy_attachment" "petclinic-AmazonEKSVPCResourceController" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSVPCResourceController"
-  role       = aws_iam_role.petclinic.name
-}
-
-resource "aws_iam_role" "petclinic2" {
-  name = "eks-node-group-petclinic"
-
-  assume_role_policy = jsonencode({
-    Statement = [{
-      Action = "sts:AssumeRole"
-      Effect = "Allow"
-      Principal = {
-        Service = "ec2.amazonaws.com"
-      }
-    }]
-    Version = "2012-10-17"
-  })
-}
-
-resource "aws_iam_role_policy_attachment" "petclinic-AmazonEKSWorkerNodePolicy" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
-  role       = aws_iam_role.petclinic2.name
-}
-
-resource "aws_iam_role_policy_attachment" "petclinic-AmazonEKS_CNI_Policy" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
-  role       = aws_iam_role.petclinic2.name
-}
-
-resource "aws_iam_role_policy_attachment" "petclinic-AmazonEC2ContainerRegistryReadOnly" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-  role       = aws_iam_role.petclinic2.name
+resource "aws_eks_addon" "vpc_cni" {
+  cluster_name                = aws_eks_cluster.petclinic_eks_cluster.name
+  addon_name                  = "vpc-cni"
+  addon_version               = "v1.16.0-eksbuild.1"
+  resolve_conflicts_on_create = "OVERWRITE"
+  resolve_conflicts_on_update = "OVERWRITE"
+  tags = {
+    "eks_addon" = "vpc-cni"
+  }
+  depends_on = [
+    aws_eks_cluster.petclinic_eks_cluster
+  ]
 }
