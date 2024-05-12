@@ -52,3 +52,6 @@ variable "secret_key" {
   type        = string
 }
 
+variable "sns_topic_arn" {
+  default = ""
+}
