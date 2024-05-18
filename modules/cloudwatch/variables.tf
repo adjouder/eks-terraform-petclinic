@@ -56,7 +56,7 @@ variable "create_rds_dd_status" {
 }
 variable "email" {
   type = string
-  default = "it.abdenour.djouder@gmail.com"
+  default = ""
 }
 
 variable "eks_logs_name" {

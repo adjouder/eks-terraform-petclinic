@@ -1,6 +1,7 @@
 # This Terraform configuration file sets up the infrastructure for the Pet Clinic application.
 # It uses modules to create a VPC, IAM roles, an EKS cluster, and an RDS database.
 
+
 module "vpc" {
   source               = "./modules/vpc"
   availability_zones   = var.availability_zones
@@ -9,6 +10,7 @@ module "vpc" {
   cidr_vpc             = var.cidr_vpc
   cluster_name    = var.cluster_name
 }
+
 module "natgateway" {
   source               = "./modules/natgateway"
   vpc_id                  = module.vpc.vpc_id
@@ -46,10 +48,9 @@ module "rds" {
   cidr_private_subnets = var.cidr_private_subnets
 }
 
-
 ############ Monitoring with CloudWatch ##################
 
-module "cloudwatch" {
-  source = "./modules/cloudwatch"
-  sns_topic_arn = var.sns_topic_arn
-}
+#module "cloudwatch" {
+#  source = "./modules/cloudwatch"
+#  sns_topic_arn = var.sns_topic_arn
+#}

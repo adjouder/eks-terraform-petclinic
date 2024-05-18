@@ -112,7 +112,7 @@ resource "aws_sns_topic" "notification" {
 
 #
 resource "aws_sns_topic_subscription" "email" {
-  topic_arn = "arn:aws:sns:eu-west-3:957507561258:eks-notifications"
+  topic_arn = var.sns_topic_arn
   protocol  = "email"
   endpoint  = var.email
 }

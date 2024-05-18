@@ -38,7 +38,8 @@
                 "elasticloadbalancing:DescribeTargetGroups",
                 "elasticloadbalancing:DescribeTargetGroupAttributes",
                 "elasticloadbalancing:DescribeTargetHealth",
-                "elasticloadbalancing:DescribeTags"
+                "elasticloadbalancing:DescribeTags",
+                "elasticloadbalancing:DescribeTrustStores"
             ],
             "Resource": "*"
         },
@@ -48,7 +49,6 @@
                 "cognito-idp:DescribeUserPoolClient",
                 "acm:ListCertificates",
                 "acm:DescribeCertificate",
-                "acm:GetCertificate",
                 "iam:ListServerCertificates",
                 "iam:GetServerCertificate",
                 "waf-regional:GetWebACL",

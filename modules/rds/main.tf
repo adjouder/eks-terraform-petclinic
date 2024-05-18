@@ -19,7 +19,7 @@ resource "aws_db_instance" "db" {
   vpc_security_group_ids  = [aws_security_group.petclinic_sg_bd.id]
   multi_az                = true
   skip_final_snapshot     = true
-  backup_retention_period = 1
+  backup_retention_period = 0# metttre à 1 à la fin des test
   tags = {
     Name = "petclinic-db-${var.identifiants[count.index]}"
   }
