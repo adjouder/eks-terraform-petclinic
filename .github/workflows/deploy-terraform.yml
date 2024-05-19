@@ -1,7 +1,7 @@
 name: "Terraform aws EKS deployment"
 on: [push, pull_request]
 env:
-  TF_LOG: INFO
+  TF_LOG: DEBUG
 jobs:
   terraform:
     name: 'Terraform'
@@ -35,6 +35,9 @@ jobs:
           sed -i 's#\my-access-key'"#$AWS_ACCESS_KEY_ID#g" terraform.tfvars
           sed -i 's#\my-secret-key'"#$AWS_SECRET_ACCESS_KEY#g" terraform.tfvars
           sed -i 's#\my-sns-topic-arn'"#$AWS_SNS_TOPIC_ARN#g" terraform.tfvars
+          sed -i 's#\petclinic'"#$CLUSTER_NAME#g" terraform.tfvars
+          cat terraform.tfvars | grep petclinic
+
 
           
       # Install the preferred version of Terraform CLI
@@ -53,7 +56,9 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_SNS_TOPIC_ARN: ${{ secrets.AWS_SNS_TOPIC_ARN }}
           PETCLINIC_PASSWORD: ${{ secrets.PETCLINIC_PASSWORD }}
-        run: terraform init
+        run:  |
+          cat terraform.tfvars | grep petclinic
+          terraform init
 
       # Run a terraform plan for pull requests only
       - name: Terraform Plan
@@ -66,10 +71,12 @@ jobs:
           AWS_SNS_TOPIC_ARN: ${{ secrets.AWS_SNS_TOPIC_ARN }}
           PETCLINIC_PASSWORD: ${{ secrets.PETCLINIC_PASSWORD }}
         #if: github.event_name == 'pull_request'
-        run: terraform plan
+        run: |
+          cat terraform.tfvars | grep petclinic
+          terraform plan
 
       - name: Terraform Apply
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        #if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TF_ACTION_WORKING_DIR: 'terraform'
@@ -77,5 +84,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_SNS_TOPIC_ARN: ${{ secrets.AWS_SNS_TOPIC_ARN }}
           PETCLINIC_PASSWORD: ${{ secrets.PETCLINIC_PASSWORD }}
-        run : ./scripts/deploy.sh
+        run :  |
+          cat terraform.tfvars | grep petclinic
+        #run : ./scripts/deploy.sh
         #run: terraform apply -auto-approve
