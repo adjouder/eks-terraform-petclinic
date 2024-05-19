@@ -23,12 +23,10 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_SNS_TOPIC_ARN: ${{ secrets.AWS_SNS_TOPIC_ARN }}
           PETCLINIC_PASSWORD: ${{ secrets.PETCLINIC_PASSWORD }}  
+          CLUSTER_NAME: ${{ vars.CLUSTER_NAME }}  
         run: |
+          echo "CLUSTER_NAME : $CLUSTER_NAME"
           sed -i 's#\my-aws-account-id'"#$AWS_ACOUNT_ID#g" terraform.tfvars
-          sed -i 's#\my-access-key'"#$AWS_ACCESS_KEY_ID#g" terraform.tfvars
-          sed -i 's#\my-secret-key'"#$AWS_SECRET_ACCESS_KEY#g" terraform.tfvars
-          sed -i 's#\my-sns-topic-arn'"#$AWS_SNS_TOPIC_ARN#g" terraform.tfvars
-          sed -i 's#\my-password'"#$PETCLINIC_PASSWORD#g" terraform.tfvars
           
           cat terraform.tfvars | grep my-password
           cat terraform.tfvars | grep cluster_name
