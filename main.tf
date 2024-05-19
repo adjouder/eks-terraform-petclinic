@@ -1,6 +1,18 @@
 # This Terraform configuration file sets up the infrastructure for the Pet Clinic application.
 # It uses modules to create a VPC, IAM roles, an EKS cluster, and an RDS database.
-
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "5.30.0"
+    }
+  }
+}
+provider "aws" {
+  access_key = var.access_key
+  region     = "eu-west-3"
+  secret_key = var.secret_key
+}
 
 module "vpc" {
   source               = "./modules/vpc"
