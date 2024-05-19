@@ -55,3 +55,7 @@ variable "secret_key" {
 variable "sns_topic_arn" {
   default = ""
 }
+
+variable "email" {
+  default = "it.abdenour.djouder@gmail.com"
+}
