@@ -27,7 +27,7 @@ jobs:
 
         run: |
           echo "CLUSTER_NAME :${CLUSTER_NAME}"
-          echo "sed -i 's#\my-aws-account-id'"#${AWS_ACOUNT_ID}#g" terraform.tfvars"
+          echo "sed -i 's#\my-aws-account-id'"#${AWS_ACOUNT_ID}#g" terraform.tfvars
           sed -i 's#\my-aws-account-id'"#${AWS_ACOUNT_ID}#g" terraform.tfvars
           sed -i 's#\my-access-key'"#${AWS_ACCESS_KEY_ID}#g" terraform.tfvars
           sed -i 's#\my-secret-key'"#${AWS_SECRET_ACCESS_KEY}#g" terraform.tfvars
