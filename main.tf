@@ -50,7 +50,7 @@ module "rds" {
 
 ############ Monitoring with CloudWatch ##################
 
-#module "cloudwatch" {
+module "cloudwatch" {
   source = "./modules/cloudwatch"
   sns_topic_arn = var.sns_topic_arn
 }
