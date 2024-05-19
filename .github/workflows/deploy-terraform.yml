@@ -34,7 +34,7 @@ jobs:
           sed -i 's#\my-access-key'"#$AWS_ACCESS_KEY_ID#g" terraform.tfvars
           sed -i 's#\my-secret-key'"#$AWS_SECRET_ACCESS_KEY#g" terraform.tfvars
           sed -i 's#\my-sns-topic-arn'"#$AWS_SNS_TOPIC_ARN#g" terraform.tfvars
-          cat terraform.tfvars | grep my-access-key
+          cat terraform.tfvars | grep access_key
 
       # Install the preferred version of Terraform CLI
       - name: Setup Terraform
@@ -53,7 +53,7 @@ jobs:
           AWS_SNS_TOPIC_ARN: ${{ secrets.AWS_SNS_TOPIC_ARN }}
           PETCLINIC_PASSWORD: ${{ secrets.PETCLINIC_PASSWORD }}
         run:  |
-          cat terraform.tfvars | grep my-access-key
+          cat terraform.tfvars | grep access_key
           terraform init
 
       # Run a terraform plan for pull requests only
@@ -68,7 +68,7 @@ jobs:
           PETCLINIC_PASSWORD: ${{ secrets.PETCLINIC_PASSWORD }}
         #if: github.event_name == 'pull_request'
         run: |
-          cat terraform.tfvars | grep aws_account_id
+          cat terraform.tfvars | grep access_key
           terraform plan
 
       - name: Terraform Apply
@@ -81,6 +81,6 @@ jobs:
           AWS_SNS_TOPIC_ARN: ${{ secrets.AWS_SNS_TOPIC_ARN }}
           PETCLINIC_PASSWORD: ${{ secrets.PETCLINIC_PASSWORD }}
         run :  |
-          cat terraform.tfvars | grep my-access-key
+          cat terraform.tfvars | grep access_key
         #run : ./scripts/deploy.sh
         #run: terraform apply -auto-approve
