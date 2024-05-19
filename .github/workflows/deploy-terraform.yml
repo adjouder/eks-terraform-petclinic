@@ -22,17 +22,21 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_SNS_TOPIC_ARN: ${{ secrets.AWS_SNS_TOPIC_ARN }}
           PETCLINIC_PASSWORD: ${{ secrets.PETCLINIC_PASSWORD }}  
-          AWS_ACOUNT_ID: ${{ secrets.AWS_ACOUNT_ID }}          
+          AWS_ACOUNT_ID: ${{ secrets.AWS_ACOUNT_ID }} 
+          CLUSTER_NAME: "TEST_CLUSTER_NAME"
 
         run: |
-          echo "NUMERO :${AWS_ACOUNT_ID}"
+          echo "CLUSTER_NAME :${CLUSTER_NAME}"
           echo "sed -i 's#\my-aws-account-id'"#${AWS_ACOUNT_ID}#g" terraform.tfvars"
           sed -i 's#\my-aws-account-id'"#${AWS_ACOUNT_ID}#g" terraform.tfvars
           sed -i 's#\my-access-key'"#${AWS_ACCESS_KEY_ID}#g" terraform.tfvars
           sed -i 's#\my-secret-key'"#${AWS_SECRET_ACCESS_KEY}#g" terraform.tfvars
           sed -i 's#\my-sns-topic-arn'"#${AWS_SNS_TOPIC_ARN}#g" terraform.tfvars
           sed -i 's#\my-password'"#${PETCLINIC_PASSWORD}#g" terraform.tfvars
-          cat terraform.tfvars | grep aws_account_id
+          sed -i 's#\cluster_name'"#${CLUSTER_NAME}#g" terraform.tfvars
+          cat terraform.tfvars | grep my-password
+          cat terraform.tfvars | grep cluster_name
+
           
       # Install the preferred version of Terraform CLI
       - name: Setup Terraform
