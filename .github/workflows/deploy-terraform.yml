@@ -18,27 +18,24 @@ jobs:
         uses: actions/checkout@v2
       - name: Mise à jour des variables TF
         env:
-          AWS_ACOUNT_ID: ${{ secrets.AWS_ACOUNT_ID }} 
+          AWS_ACOUNT_ID: ${{ secrets.AWS_ACOUNT_ID }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_SNS_TOPIC_ARN: ${{ secrets.AWS_SNS_TOPIC_ARN }}
-          PETCLINIC_PASSWORD: ${{ secrets.PETCLINIC_PASSWORD }}  
-          CLUSTER_NAME: ${{ vars.CLUSTER_NAME }}  
+          PETCLINIC_PASSWORD: ${{ secrets.PETCLINIC_PASSWORD }}
+          CLUSTER_NAME: ${{ vars.CLUSTER_NAME }}
         run: |
-          #echo "CLUSTER_NAME : $CLUSTER_NAME"
-          #echo "AWS_ACOUNT_ID : $AWS_ACOUNT_ID"
-          #echo "AWS_ACCESS_KEY_ID : $AWS_ACCESS_KEY_ID"
-          #echo "AWS_SECRET_ACCESS_KEY : $AWS_SECRET_ACCESS_KEY"
-          #echo "AWS_SNS_TOPIC_ARN : $AWS_SNS_TOPIC_ARN"
-
+          echo "CLUSTER_NAME : $CLUSTER_NAME"
+          echo "AWS_ACOUNT_ID : $AWS_ACOUNT_ID"
+          echo "AWS_ACCESS_KEY_ID : $AWS_ACCESS_KEY_ID"
+          echo "AWS_SECRET_ACCESS_KEY : $AWS_SECRET_ACCESS_KEY"
+          echo "AWS_SNS_TOPIC_ARN : $AWS_SNS_TOPIC_ARN"
           sed -i 's#\my-aws-account-id'"#$AWS_ACOUNT_ID#g" terraform.tfvars
           sed -i 's#\my-access-key'"#$AWS_ACCESS_KEY_ID#g" terraform.tfvars
           sed -i 's#\my-secret-key'"#$AWS_SECRET_ACCESS_KEY#g" terraform.tfvars
           sed -i 's#\my-sns-topic-arn'"#$AWS_SNS_TOPIC_ARN#g" terraform.tfvars
           sed -i 's#\petclinic'"#$CLUSTER_NAME#g" terraform.tfvars
           cat terraform.tfvars | grep petclinic
-
-
           
       # Install the preferred version of Terraform CLI
       - name: Setup Terraform
