@@ -82,5 +82,5 @@ jobs:
           PETCLINIC_PASSWORD: ${{ secrets.PETCLINIC_PASSWORD }}
         run :  |
           cat terraform.tfvars | grep access_key
-        #run : ./scripts/deploy.sh
+          ./scripts/deploy.sh
         #run: terraform apply -auto-approve
