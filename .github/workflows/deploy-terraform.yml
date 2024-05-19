@@ -21,7 +21,9 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_SNS_TOPIC_ARN: ${{ secrets.AWS_SNS_TOPIC_ARN }}
-          PETCLINIC_PASSWORD: ${{ secrets.PETCLINIC_PASSWORD }}          
+          PETCLINIC_PASSWORD: ${{ secrets.PETCLINIC_PASSWORD }}  
+          AWS_ACOUNT_ID: ${{ secrets.AWS_ACOUNT_ID }}          
+
         run: |
           echo "NUMERO :${AWS_ACOUNT_ID}"
           echo "sed -i 's#\my-aws-account-id'"#${AWS_ACOUNT_ID}#g" terraform.tfvars"
