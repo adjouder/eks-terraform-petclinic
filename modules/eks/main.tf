@@ -77,3 +77,14 @@ resource "aws_eks_addon" "vpc_cni" {
     aws_eks_cluster.petclinic_eks_cluster
   ]
 }
+
+resource "aws_eks_addon" "cloudwatch-observability" {
+  addon_name   = "amazon-cloudwatch-observability"
+  cluster_name = aws_eks_cluster.petclinic_eks_cluster.name
+  tags = {
+    "eks_addon" = "coredns"
+  }
+  depends_on = [
+    aws_eks_cluster.petclinic_eks_cluster
+  ]
+}

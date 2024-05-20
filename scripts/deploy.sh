@@ -6,7 +6,7 @@ fi
 
 echo "Déploiement de l'infrastructure..."
 
-MAX_RETRIES=2
+MAX_RETRIES=3
 COUNTER=0
 
 # Fonction pour déployer avec Terraform
@@ -42,11 +42,11 @@ echo "Déploiement terminé !"
 
 # Mise à jour des variables CI/CD gitlab pour le déploiement
 echo "Mise à jour des variables CI/CD gitlab pour le déploiement..."
-
+aws eks --region eu-west-3 update-kubeconfig --name petlinic
 
 DB_URL_CUSTOMERS=$(terraform output -raw customer_db_endpoint_main)
 DB_URL_VISITS=$(terraform output -raw visit_db_endpoint_main)
-DB_URL_VETS=$(terraform output -raw vets_db_endpoint_main)
+DB_URL_VETS=$(terraform output -raw vet_db_endpoint_main)
 DB_PASSWORD_CUSTOMERS=$(terraform output -raw customer_db_password_main)
 DB_PASSWORD_VISITS=$(terraform output -raw visit_db_password_main)
 DB_PASSWORD_VETS=$(terraform output -raw vet_db_password_main)

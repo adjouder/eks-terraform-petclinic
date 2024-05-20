@@ -5,50 +5,122 @@ resource "aws_cloudwatch_dashboard" "petclinic-dashboard" {
   dashboard_body = jsonencode({
     "widgets": [
       {
-        "type": "explorer",
-        "width": 24,
-        "height": 15,
-        "x": 0,
+        "height": 6,
+        "width": 6,
         "y": 0,
+        "x": 0,
+        "type": "metric",
         "properties": {
           "metrics": [
-            {
-              "metricName": "CPUUtilization",
-              "resourceType": "AWS::EC2::Instance",
-              "stat": "Average"
-            },
-            {
-              "metricName": "NetworkIn",
-              "resourceType": "AWS::EC2::Instance",
-              "stat": "Average"
-            },
-            {
-              "metricName": "NetworkOut",
-              "resourceType": "AWS::EC2::Instance",
-              "stat": "Average"
-            }
+            [ "AWS/RDS", "DatabaseConnections", "DBInstanceIdentifier", "vet-db", { "period": 300, "stat": "Sum" } ],
+            [ "AWS/RDS", "DatabaseConnections", "DBInstanceIdentifier", "visit-db", { "period": 300, "stat": "Sum" } ],
+            [ "AWS/RDS", "DatabaseConnections", "DBInstanceIdentifier", "customer-db", { "period": 300, "stat": "Sum" } ]
           ],
-          "aggregateBy": {
-            "key": "InstanceType",
-            "func": "MAX"
+          "legend": {
+            "position": "bottom"
           },
-          "labels": [
-            {
-              "key": "State",
-              "value": "running"
-            }
+          "region": "eu-west-3",
+          "liveData": false,
+          "timezone": "UTC",
+          "title": "DatabaseConnections: Sum",
+          "view": "timeSeries",
+          "stacked": false
+        }
+      },
+      {
+        "height": 6,
+        "width": 6,
+        "y": 0,
+        "x": 6,
+        "type": "metric",
+        "properties": {
+          "title": "eks-memory-alarm",
+          "annotations": {
+            "alarms": [
+              "arn:aws:cloudwatch:eu-west-3:957507561258:alarm:eks-memory-alarm"
+            ]
+          },
+          "liveData": false,
+          "region": "eu-west-3",
+          "timezone": "UTC",
+          "view": "timeSeries",
+          "stacked": false
+        }
+      },
+      {
+        "height": 6,
+        "width": 6,
+        "y": 0,
+        "x": 12,
+        "type": "metric",
+        "properties": {
+          "metrics": [
+            [ "AWS/SNS", "NumberOfNotificationsFailed", "TopicName", "eks-notifications", { "period": 300, "stat": "Sum", "region": "eu-west-3" } ]
           ],
-          "widgetOptions": {
-            "legend": {
-              "position": "bottom"
-            },
-            "view": "timeSeries",
-            "rowsPerPage": 8,
-            "widgetsPerRow": 2
+          "legend": {
+            "position": "bottom"
           },
-          "period": 120,
-          "splitBy": "AvailabilityZone",
-          "title": "Running EC2 Instances by AZ AND db-instances-alarm"
+          "region": "eu-west-3",
+          "liveData": false,
+          "title": "NumberOfNotificationsFailed: Sum",
+          "view": "timeSeries",
+          "stacked": false
+        }
+      },
+      {
+        "height": 6,
+        "width": 6,
+        "y": 6,
+        "x": 12,
+        "type": "metric",
+        "properties": {
+          "metrics": [
+            [ "AWS/RDS", "DatabaseConnections", "DBInstanceIdentifier", "vet-db", { "period": 300, "stat": "Sum", "region": "eu-west-3" } ],
+            [ "...", "visit-db", { "period": 300, "stat": "Sum", "region": "eu-west-3" } ],
+            [ "...", "customer-db", { "period": 300, "stat": "Sum", "region": "eu-west-3" } ]
+          ],
+          "legend": {
+            "position": "bottom"
+          },
+          "region": "eu-west-3",
+          "liveData": false,
+          "title": "DatabaseConnections: Sum",
+          "view": "timeSeries",
+          "stacked": false
+        }
+      },
+      {
+        "height": 6,
+        "width": 6,
+        "y": 6,
+        "x": 0,
+        "type": "metric",
+        "properties": {
+          "title": "ApplicationInsights/ApplicationInsights-customer-db/AWS/EC2/StatusCheckFailed/i-0eaf275d2e6d6f312/",
+          "annotations": {
+            "alarms": [
+              "arn:aws:cloudwatch:eu-west-3:957507561258:alarm:ApplicationInsights/ApplicationInsights-customer-db/AWS/EC2/StatusCheckFailed/i-0eaf275d2e6d6f312/"
+            ]
+          },
+          "view": "timeSeries",
+          "stacked": false
+        }
+      },
+      {
+        "type": "metric",
+        "x": 6,
+        "y": 6,
+        "width": 6,
+        "height": 6,
+        "properties": {
+          "title": "ApplicationInsights/ApplicationInsights-customer-db/AWS/RDS/WriteLatency/vet-db/",
+          "annotations": {
+            "alarms": [
+              "arn:aws:cloudwatch:eu-west-3:957507561258:alarm:ApplicationInsights/ApplicationInsights-customer-db/AWS/RDS/WriteLatency/vet-db/"
+            ]
+          },
+          "view": "timeSeries",
+          "stacked": false
         }
       }
     ]
@@ -114,7 +186,7 @@ resource "aws_sns_topic" "notification" {
 resource "aws_sns_topic_subscription" "email" {
   topic_arn = var.sns_topic_arn
   protocol  = "email"
-  endpoint  = var.email
+  endpoint  = "it.abdenour.djouder@gamil.com"
 }
 
 ####STORAGE

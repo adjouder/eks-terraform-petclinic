@@ -1,7 +1,7 @@
 name: "Terraform aws EKS deployment"
 on: [push, pull_request]
 env:
-  TF_LOG: DEBUG
+  TF_LOG: INFO
 jobs:
   terraform:
     name: 'Terraform'
