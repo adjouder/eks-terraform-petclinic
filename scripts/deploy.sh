@@ -6,7 +6,7 @@ fi
 
 echo "Déploiement de l'infrastructure..."
 
-MAX_RETRIES=3
+MAX_RETRIES=1
 COUNTER=0
 
 # Fonction pour déployer avec Terraform

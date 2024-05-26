@@ -1,6 +1,6 @@
 # This Terraform file defines IAM roles and policies for an EKS cluster and worker nodes.
 resource "aws_iam_role" "eks_iam_role" {
-  name = "${var.cluster_name}-eks"
+  name = "${var.cluster_name}-eks-role"
 
   path = "/"
 
@@ -76,10 +76,9 @@ resource "aws_iam_role_policy_attachment" "AWSCertificateManagerReadOnly-EKS2" {
   policy_arn = "arn:aws:iam::aws:policy/AWSCertificateManagerReadOnly"
   role       = aws_iam_role.workernodes.name
 }
-
 # Create IAM role and policy for Kubernetes ALB controller
 resource "aws_iam_policy" "kubernetes_alb_controller" {
-  name        = "${var.cluster_name}-alb-controller"
+  name        = "${var.cluster_name}-alb-controller-policy"
   path        = "/"
   description = "Policy for load balancer controller service"
 
@@ -87,7 +86,7 @@ resource "aws_iam_policy" "kubernetes_alb_controller" {
 }
 
 resource "aws_iam_role" "kubernetes_alb_controller" {
-  name = "${var.cluster_name}-alb-controller"
+  name = "${var.cluster_name}-alb-controller-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17",

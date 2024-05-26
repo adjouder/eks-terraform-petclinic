@@ -1,5 +1,8 @@
 name: "Terraform aws EKS deployment"
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
 env:
   TF_LOG: INFO
 jobs:

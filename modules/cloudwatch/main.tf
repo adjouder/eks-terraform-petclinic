@@ -11,20 +11,20 @@ resource "aws_cloudwatch_dashboard" "petclinic-dashboard" {
         "x": 0,
         "type": "metric",
         "properties": {
+          "legend": {
+            "position": "bottom"
+          },
+          "liveData": false,
           "metrics": [
             [ "AWS/RDS", "DatabaseConnections", "DBInstanceIdentifier", "vet-db", { "period": 300, "stat": "Sum" } ],
             [ "AWS/RDS", "DatabaseConnections", "DBInstanceIdentifier", "visit-db", { "period": 300, "stat": "Sum" } ],
             [ "AWS/RDS", "DatabaseConnections", "DBInstanceIdentifier", "customer-db", { "period": 300, "stat": "Sum" } ]
           ],
-          "legend": {
-            "position": "bottom"
-          },
           "region": "eu-west-3",
-          "liveData": false,
+          "stacked": false,
           "timezone": "UTC",
           "title": "DatabaseConnections: Sum",
-          "view": "timeSeries",
-          "stacked": false
+          "view": "timeSeries"
         }
       },
       {
@@ -34,7 +34,6 @@ resource "aws_cloudwatch_dashboard" "petclinic-dashboard" {
         "x": 6,
         "type": "metric",
         "properties": {
-          "title": "eks-memory-alarm",
           "annotations": {
             "alarms": [
               "arn:aws:cloudwatch:eu-west-3:957507561258:alarm:eks-memory-alarm"
@@ -42,9 +41,10 @@ resource "aws_cloudwatch_dashboard" "petclinic-dashboard" {
           },
           "liveData": false,
           "region": "eu-west-3",
+          "stacked": false,
           "timezone": "UTC",
-          "view": "timeSeries",
-          "stacked": false
+          "title": "eks-memory-alarm",
+          "view": "timeSeries"
         }
       },
       {
@@ -54,17 +54,17 @@ resource "aws_cloudwatch_dashboard" "petclinic-dashboard" {
         "x": 12,
         "type": "metric",
         "properties": {
-          "metrics": [
-            [ "AWS/SNS", "NumberOfNotificationsFailed", "TopicName", "eks-notifications", { "period": 300, "stat": "Sum", "region": "eu-west-3" } ]
-          ],
           "legend": {
             "position": "bottom"
           },
-          "region": "eu-west-3",
           "liveData": false,
+          "metrics": [
+            [ "AWS/SNS", "NumberOfNotificationsFailed", "TopicName", "eks-notifications", { "period": 300, "region": "eu-west-3", "stat": "Sum" } ]
+          ],
+          "region": "eu-west-3",
+          "stacked": false,
           "title": "NumberOfNotificationsFailed: Sum",
-          "view": "timeSeries",
-          "stacked": false
+          "view": "timeSeries"
         }
       },
       {
@@ -74,17 +74,54 @@ resource "aws_cloudwatch_dashboard" "petclinic-dashboard" {
         "x": 12,
         "type": "metric",
         "properties": {
-          "metrics": [
-            [ "AWS/RDS", "DatabaseConnections", "DBInstanceIdentifier", "vet-db", { "period": 300, "stat": "Sum", "region": "eu-west-3" } ],
-            [ "...", "visit-db", { "period": 300, "stat": "Sum", "region": "eu-west-3" } ],
-            [ "...", "customer-db", { "period": 300, "stat": "Sum", "region": "eu-west-3" } ]
-          ],
           "legend": {
             "position": "bottom"
           },
-          "region": "eu-west-3",
           "liveData": false,
+          "metrics": [
+            [ "AWS/RDS", "DatabaseConnections", "DBInstanceIdentifier", "vet-db", { "period": 300, "region": "eu-west-3", "stat": "Sum" } ],
+            [ "...", "visit-db", { "period": 300, "region": "eu-west-3", "stat": "Sum" } ],
+            [ "...", "customer-db", { "period": 300, "region": "eu-west-3", "stat": "Sum" } ]
+          ],
+          "region": "eu-west-3",
+          "stacked": false,
           "title": "DatabaseConnections: Sum",
+          "view": "timeSeries"
+        }
+      },
+      {
+        "height": 6,
+        "width": 6,
+        "y": 6,
+        "x": 6,
+        "type": "metric",
+        "properties": {
+          "annotations": {
+            "alarms": [
+              "arn:aws:cloudwatch:eu-west-3:957507561258:alarm:ApplicationInsights/ApplicationInsights-customer-db/AWS/RDS/WriteLatency/vet-db/"
+            ]
+          },
+          "stacked": false,
+          "title": "ApplicationInsights/ApplicationInsights-customer-db/AWS/RDS/WriteLatency/vet-db/",
+          "view": "timeSeries"
+        }
+      },
+      {
+        "height": 6,
+        "width": 6,
+        "y": 0,
+        "x": 18,
+        "type": "metric",
+        "properties": {
+          "title": "D-Customer-free-data-storage",
+          "annotations": {
+            "alarms": [
+              "arn:aws:cloudwatch:eu-west-3:957507561258:alarm:D-Customer-free-data-storage"
+            ]
+          },
+          "liveData": false,
+          "region": "eu-west-3",
+          "timezone": "UTC",
           "view": "timeSeries",
           "stacked": false
         }
@@ -96,31 +133,183 @@ resource "aws_cloudwatch_dashboard" "petclinic-dashboard" {
         "x": 0,
         "type": "metric",
         "properties": {
-          "title": "ApplicationInsights/ApplicationInsights-customer-db/AWS/EC2/StatusCheckFailed/i-0eaf275d2e6d6f312/",
+          "title": "EC2-Check-Status-alarm",
           "annotations": {
             "alarms": [
-              "arn:aws:cloudwatch:eu-west-3:957507561258:alarm:ApplicationInsights/ApplicationInsights-customer-db/AWS/EC2/StatusCheckFailed/i-0eaf275d2e6d6f312/"
+              "arn:aws:cloudwatch:eu-west-3:957507561258:alarm:EC2-Check-Status-alarm"
             ]
           },
+          "liveData": false,
+          "region": "eu-west-3",
+          "timezone": "UTC",
           "view": "timeSeries",
           "stacked": false
         }
       },
       {
         "type": "metric",
-        "x": 6,
+        "x": 18,
         "y": 6,
         "width": 6,
         "height": 6,
         "properties": {
-          "title": "ApplicationInsights/ApplicationInsights-customer-db/AWS/RDS/WriteLatency/vet-db/",
-          "annotations": {
-            "alarms": [
-              "arn:aws:cloudwatch:eu-west-3:957507561258:alarm:ApplicationInsights/ApplicationInsights-customer-db/AWS/RDS/WriteLatency/vet-db/"
-            ]
+          "region": "eu-west-3",
+          "title": "EKS Landing Page Control Plane Widget Total Server Requests",
+          "legend": {
+            "position": "bottom"
           },
-          "view": "timeSeries",
-          "stacked": false
+          "timezone": "LOCAL",
+          "metrics": [
+            [ { "id": "expr1", "color": "#1f77b4", "label": "Max API server requests", "expression": "SELECT MAX(apiserver_request_total) FROM SCHEMA(ContainerInsights, ClusterName) " } ]
+          ],
+          "liveData": false,
+          "period": 60,
+          "view": "singleValue",
+          "sparkline": true,
+          "yAxis": {
+            "left": {
+              "showUnits": false,
+              "label": "Percent"
+            }
+          }
+        }
+      },
+      {
+        "type": "metric",
+        "x": 0,
+        "y": 12,
+        "width": 6,
+        "height": 6,
+        "properties": {
+          "region": "eu-west-3",
+          "title": "EKS Landing Page Control Plane Widget Server Request Latency",
+          "legend": {
+            "position": "bottom"
+          },
+          "timezone": "LOCAL",
+          "metrics": [
+            [ { "id": "expr1", "color": "#1f77b4", "label": "Average API server requests latency", "expression": "SELECT AVG(apiserver_request_duration_seconds) FROM SCHEMA(ContainerInsights, ClusterName) " } ]
+          ],
+          "liveData": false,
+          "period": 60,
+          "view": "singleValue",
+          "sparkline": true,
+          "yAxis": {
+            "left": {
+              "showUnits": false,
+              "label": "Percent"
+            }
+          }
+        }
+      },
+      {
+        "type": "metric",
+        "x": 6,
+        "y": 12,
+        "width": 6,
+        "height": 6,
+        "properties": {
+          "region": "eu-west-3",
+          "title": "EKS Landing Page Control Plane Widget Total Number Of Stored Objects",
+          "legend": {
+            "position": "bottom"
+          },
+          "timezone": "LOCAL",
+          "metrics": [
+            [ { "id": "expr1", "color": "#1f77b4", "label": "Total number of stored objects", "expression": "SELECT MAX(apiserver_storage_objects) FROM SCHEMA(ContainerInsights, ClusterName) " } ]
+          ],
+          "liveData": false,
+          "period": 60,
+          "view": "singleValue",
+          "sparkline": true,
+          "yAxis": {
+            "left": {
+              "showUnits": false,
+              "label": "Percent"
+            }
+          }
+        }
+      },
+      {
+        "type": "metric",
+        "x": 12,
+        "y": 12,
+        "width": 6,
+        "height": 6,
+        "properties": {
+          "region": "eu-west-3",
+          "title": "EKS Landing Page Control Plane Widget Admission Controller Latency",
+          "legend": {
+            "position": "bottom"
+          },
+          "timezone": "LOCAL",
+          "metrics": [
+            [ { "id": "expr1", "color": "#1f77b4", "label": "Average admission controller latency", "expression": "SELECT AVG(apiserver_admission_controller_admission_duration_seconds) FROM SCHEMA(ContainerInsights, ClusterName) " } ]
+          ],
+          "liveData": false,
+          "period": 60,
+          "view": "singleValue",
+          "sparkline": true,
+          "yAxis": {
+            "left": {
+              "showUnits": false,
+              "label": "Percent"
+            }
+          }
+        }
+      },
+      {
+        "type": "metric",
+        "x": 18,
+        "y": 12,
+        "width": 6,
+        "height": 6,
+        "properties": {
+          "region": "eu-west-3",
+          "title": "Top Pods per Memory Utilization",
+          "legend": {
+            "position": "right"
+          },
+          "timezone": "LOCAL",
+          "metrics": [
+            [ { "expression": "SELECT MAX(pod_memory_utilization) FROM SCHEMA(ContainerInsights, ClusterName, FullPodName, Namespace, PodName)  GROUP BY FullPodName,PodName,Namespace,ClusterName ORDER BY MAX() DESC LIMIT 10" } ]
+          ],
+          "liveData": false,
+          "period": 60,
+          "yAxis": {
+            "left": {
+              "min": 0,
+              "showUnits": false,
+              "label": "Percent"
+            }
+          }
+        }
+      },
+      {
+        "type": "metric",
+        "x": 0,
+        "y": 18,
+        "width": 6,
+        "height": 6,
+        "properties": {
+          "region": "eu-west-3",
+          "title": "Top Containers per Memory Utilization",
+          "legend": {
+            "position": "right"
+          },
+          "timezone": "LOCAL",
+          "metrics": [
+            [ { "expression": "SELECT MAX(container_memory_utilization) FROM SCHEMA(ContainerInsights, ClusterName, Namespace, PodName, FullPodName, ContainerName)  GROUP BY ContainerName,FullPodName,PodName,Namespace,ClusterName ORDER BY MAX() DESC LIMIT 10" } ]
+          ],
+          "liveData": false,
+          "period": 60,
+          "yAxis": {
+            "left": {
+              "min": 0,
+              "showUnits": false,
+              "label": "Percent"
+            }
+          }
         }
       }
     ]
@@ -129,16 +318,14 @@ resource "aws_cloudwatch_dashboard" "petclinic-dashboard" {
 
 
 resource "aws_cloudwatch_log_group" "eks_logs" {
-  name              = var.eks_logs_name
+  name              = "${var.cluster_name}-eks-logs-group"
   retention_in_days = 30
 }
 
 resource "aws_cloudwatch_log_stream" "eks_log_stream" {
-  name           = "eks_logs"
+  name           = "${var.cluster_name}-eks-logs-stream"
   log_group_name = aws_cloudwatch_log_group.eks_logs.name
 }
-
-
 
 resource "aws_cloudwatch_metric_alarm" "eks_cpu_alarm" {
   alarm_name          = "eks-cpu-alarm"
@@ -181,7 +368,6 @@ resource "aws_cloudwatch_metric_alarm" "eks_memory_alarm" {
 resource "aws_sns_topic" "notification" {
   name = "eks-notifications"
 }
-
 #
 resource "aws_sns_topic_subscription" "email" {
   topic_arn = var.sns_topic_arn
@@ -190,7 +376,6 @@ resource "aws_sns_topic_subscription" "email" {
 }
 
 ####STORAGE
-
 resource "aws_cloudwatch_metric_alarm" "rds_cloudwatch_alarm_storage_80" {
   count = var.create_storage_80_alert && var.create_alarms ? 1 : 0
 
@@ -211,7 +396,6 @@ resource "aws_cloudwatch_metric_alarm" "rds_cloudwatch_alarm_storage_80" {
 }
 
 # CONNECTION COUNT
-
 
 resource "aws_cloudwatch_metric_alarm" "rds_cloudwatch_alarm_conn_count_80" {
   count               = var.create_connection_count_80_alert && var.create_alarms ? 1 : 0
