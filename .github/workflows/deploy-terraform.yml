@@ -1,15 +1,53 @@
 name: "Terraform aws EKS deployment"
-
-on: [push]
+on:
+  push:
+    branches:
+      - main
+env:
+  TF_LOG: INFO
 jobs:
-  tf_fmt:
-    name: Deploy Site
+  terraform:
+    name: 'Terraform'
     runs-on: ubuntu-latest
+    # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
+    # Set the working directory to main for the config files
+    defaults:
+      run:
+        shell: bash
+        working-directory: .
     steps:
-    
-      - name: Checkout Repo
-        uses: actions/checkout@v1
-      - name: Mise à jour des variables
+      # Checkout the repository to the GitHub Actions runner
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Mise à jour des variables TF
+        env:
+          AWS_ACOUNT_ID: ${{ secrets.AWS_ACOUNT_ID }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_SNS_TOPIC_ARN: ${{ secrets.AWS_SNS_TOPIC_ARN }}
+          PETCLINIC_PASSWORD: ${{ secrets.PETCLINIC_PASSWORD }}
+          CLUSTER_NAME: ${{ vars.CLUSTER_NAME }}
+        run: |
+          echo "AWS_ACCESS_KEY_ID : $AWS_ACCESS_KEY_ID"
+          cat terraform.tfvars | grep my-access-key
+          
+          echo "AWS_SECRET_ACCESS_KEY : $AWS_SECRET_ACCESS_KEY"
+          echo "AWS_SNS_TOPIC_ARN : $AWS_SNS_TOPIC_ARN"
+          sed -i 's#\my-aws-account-id'"#$AWS_ACOUNT_ID#g" terraform.tfvars
+          sed -i 's#\my-access-key'"#$AWS_ACCESS_KEY_ID#g" terraform.tfvars
+          sed -i 's#\my-secret-key'"#$AWS_SECRET_ACCESS_KEY#g" terraform.tfvars
+          sed -i 's#\my-sns-topic-arn'"#$AWS_SNS_TOPIC_ARN#g" terraform.tfvars
+          cat terraform.tfvars | grep access_key
+
+      # Install the preferred version of Terraform CLI
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.8.3
+
+      # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
+      - name: Terraform Init
+        id: init
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TF_ACTION_WORKING_DIR: 'terraform'
@@ -17,31 +55,35 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_SNS_TOPIC_ARN: ${{ secrets.AWS_SNS_TOPIC_ARN }}
           PETCLINIC_PASSWORD: ${{ secrets.PETCLINIC_PASSWORD }}
-        run : |
-            sed -i 's#\my-aws-account-id'"#${AWS_ACOUNT_ID}#g" terraform.tfvars
-            sed -i 's#\my-access-key'"#${AWS_ACCESS_KEY_ID}#g" terraform.tfvars
-            sed -i 's#\my-secret-key'"#${AWS_SECRET_ACCESS_KEY}#g" terraform.tfvars
-            sed -i 's#\my-sns-topic-arn'"#${AWS_SNS_TOPIC_ARN}#g" terraform.tfvars
-            sed -i 's#\my-password'"#${PETCLINIC_PASSWORD}#g" terraform.tfvars
+        run:  |
+          cat terraform.tfvars | grep access_key
+          terraform init
 
-      - name: Terraform Init
-        uses: hashicorp/terraform-github-actions/init@v0.4.0
+      # Run a terraform plan for pull requests only
+      - name: Terraform Plan
+        id: plan
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TF_ACTION_WORKING_DIR: 'terraform'
-          AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_SNS_TOPIC_ARN: ${{ secrets.AWS_SNS_TOPIC_ARN }}
           PETCLINIC_PASSWORD: ${{ secrets.PETCLINIC_PASSWORD }}
-      - name: Terraform Validate
-        uses: hashicorp/terraform-github-actions/validate@v0.3.7
+        #if: github.event_name == 'pull_request'
+        run: |
+          cat terraform.tfvars | grep access_key
+          terraform plan
 
       - name: Terraform Apply
-        uses: hashicorp/terraform-github-actions/apply@v0.4.0
+        #if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TF_ACTION_WORKING_DIR: 'terraform'
-          AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_SNS_TOPIC_ARN: ${{ secrets.AWS_SNS_TOPIC_ARN }}
           PETCLINIC_PASSWORD: ${{ secrets.PETCLINIC_PASSWORD }}
+        run :  |
+          cat terraform.tfvars | grep access_key
+          ./scripts/deploy.sh
+        #run: terraform apply -auto-approve

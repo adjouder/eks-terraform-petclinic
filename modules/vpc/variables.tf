@@ -1,20 +1,24 @@
-####### modules/vpc/provider.tf
-
-variable "vpc_cidr" {}
-variable "access_ip" {}
-variable "public_sn_count" {}
-variable "public_cidrs" {
-  type = list(any)
+# varible for the vpc IP range
+variable "cidr_vpc" {
+  description = "VPC CIDR"
 }
-variable "instance_tenancy" {
 
+variable "availability_zones" {
+  description = "Liste les dénomminations des zones de disponibilités sur lesquelles s'étend le VPC."
+  type        = list(string)
 }
-variable "tags" {
 
+variable "cidr_public_subnets" {
+  description = "CIDR des sous-réseaux publics"
+  type        = list(string)
 }
-variable "map_public_ip_on_launch" {
 
+variable "cidr_private_subnets" {
+  description = "CIDR des sous-réseaux publics"
+  type        = list(string)
 }
-variable "rt_route_cidr_block" {
 
+variable "cluster_name" {
+  type        = string
+  description = "The name of the cluster"
 }
